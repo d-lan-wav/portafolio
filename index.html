@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dylan — Portafolio</title>
+  <meta name="description" content="Portafolio de desarrollo web: proyectos, stack y contacto.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Marco de monitor CRT: todo el sitio vive dentro de .pantalla -->
+  <div class="monitor">
+  <div class="pantalla" id="pantalla">
+  <canvas id="estatica" aria-hidden="true"></canvas>
+
+  <main class="escritorio">
+    <!-- Ventana principal (como la de AWGE) -->
+    <section class="win win-main" id="win-inicio" aria-labelledby="t-inicio">
+      <header class="win-bar">
+        <h1 id="t-inicio" class="win-title" data-perfil="nombre"></h1>
+      </header>
+      <div class="win-body">
+        <div class="intro">
+          <p class="rol" data-perfil="rol"></p>
+          <p class="ubic" data-perfil="ubicacion"></p>
+        </div>
+        <nav class="iconos" aria-label="Secciones">
+          <button class="icono" data-open="lumina" style="--c:var(--rojo)"><canvas data-icono="lumina"></canvas><span>LUMINA</span></button>
+          <button class="icono" data-open="portafolio" style="--c:var(--turquesa)"><canvas data-icono="portafolio"></canvas><span>PORTAFOLIO</span></button>
+          <button class="icono" data-open="stack" style="--c:var(--azul)"><canvas data-icono="stack"></canvas><span>STACK</span></button>
+          <button class="icono" data-open="sobre" style="--c:var(--celeste)"><canvas data-icono="sobre"></canvas><span>SOBRE MI</span></button>
+          <button class="icono" data-open="terminal" style="--c:var(--negro)"><canvas data-icono="terminal"></canvas><span>TERMINAL</span></button>
+          <a class="icono" data-href="github" target="_blank" rel="noopener" style="--c:var(--negro)"><canvas data-icono="github"></canvas><span>GITHUB</span></a>
+          <button class="icono" data-open="contacto" style="--c:var(--verde)"><canvas data-icono="contacto"></canvas><span>CONTACTO</span></button>
+        </nav>
+        <footer class="pie">
+          <p>© <span id="anio"></span> <span data-perfil="nombre"></span></p>
+          <button class="link" id="toggle-fx" aria-pressed="true">EFECTOS: ON</button>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- Ventanas que se abren desde los íconos (las de proyectos se crean en main.js) -->
+  <section class="win" id="win-stack" hidden aria-labelledby="t-stack">
+    <header class="win-bar"><h2 id="t-stack" class="win-title">STACK</h2><button class="win-x" aria-label="Cerrar">×</button></header>
+    <div class="win-body" id="stack-body"></div>
+  </section>
+
+  <section class="win" id="win-sobre" hidden aria-labelledby="t-sobre">
+    <header class="win-bar"><h2 id="t-sobre" class="win-title">SOBRE MI</h2><button class="win-x" aria-label="Cerrar">×</button></header>
+    <div class="win-body" id="sobre-body"></div>
+  </section>
+
+  <section class="win" id="win-contacto" hidden aria-labelledby="t-contacto">
+    <header class="win-bar"><h2 id="t-contacto" class="win-title">CONTACTO</h2><button class="win-x" aria-label="Cerrar">×</button></header>
+    <div class="win-body">
+      <ul class="contacto">
+        <li><span>EMAIL</span><a data-href="email"></a></li>
+        <li><span>GITHUB</span><a data-href="github" target="_blank" rel="noopener"></a></li>
+        <li><span>LINKEDIN</span><a data-href="linkedin" target="_blank" rel="noopener"></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="win win-term" id="win-terminal" hidden aria-labelledby="t-terminal">
+    <header class="win-bar"><h2 id="t-terminal" class="win-title">C:\&gt; TERMINAL</h2><button class="win-x" aria-label="Cerrar">×</button></header>
+    <div class="win-body term">
+      <div id="term-salida" aria-live="polite"></div>
+      <form id="term-form" class="term-linea">
+        <label for="term-input">C:\&gt;</label>
+        <input id="term-input" autocomplete="off" spellcheck="false" aria-label="Comando">
+      </form>
+    </div>
+  </section>
+
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- Arranque: texto tipo BIOS y luego la imagen se "dibuja" de arriba hacia abajo -->
+  <div class="arranque" id="arranque" aria-hidden="true">
+    <pre>DYLAN-OS BIOS v1.0
+Memoria ........ 640K OK
+Video .......... VGA OK
+Cargando escritorio...</pre>
+  </div>
+  </div>
+  <p class="marca" aria-hidden="true">DLNHH</p>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/pixel.js"></script>
+  <script src="js/fx.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,409 @@
+/* Paleta inspirada en AWGE: grises de ventana retro + acentos saturados */
+:root {
+  --ventana: #b4b4b4;
+  --ventana-2: #a3a3a3;
+  --barra: #d6d6d6;
+  --luz: #ececec;
+  --sombra: #5c5c5c;
+  --negro: #151515;
+  --texto: #1c1c1c;
+  --naranja: #c2510c;
+  --verde: #2e7d32;
+  --rojo: #b3261e;
+  --azul: #2346c4;
+  --celeste: #1677b8;
+  --turquesa: #0e7373;
+  --lcd: #b6d98f;
+  --fondo: #8f8a70;
+  /* Carcasa del monitor */
+  --carcasa: #b1ab8d;
+  --carcasa-luz: #c4be9f;
+  --carcasa-osc: #8f8a70;
+  /* Márgenes de carcasa (m-) y grosor del bisel (b-) */
+  --m-arr: 2.2vh;
+  --m-lado: 2.4vw;
+  --m-abj: 3vh;
+  --b-arr: 4.5vh;
+  --b-lado: 3.6vw;
+  --b-abj: 6.5vh;
+  --pixel: 'Press Start 2P', monospace;
+  --mono: 'VT323', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--mono);
+  font-size: 22px;
+  line-height: 1.25;
+  overflow: hidden;
+}
+
+/* ---------- Monitor CRT ---------- */
+.monitor {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, var(--carcasa-luz), var(--carcasa) 60%, var(--carcasa-osc));
+  box-shadow: inset 0 0 0 4px var(--carcasa-osc), inset 0 0 0 7px #5e5a47;
+}
+
+/* Bisel inclinado entre la carcasa y el vidrio (cada borde con su propia luz) */
+.monitor::before {
+  content: '';
+  position: absolute;
+  top: var(--m-arr);
+  left: var(--m-lado);
+  right: var(--m-lado);
+  bottom: var(--m-abj);
+  border: solid;
+  border-width: var(--b-arr) var(--b-lado) var(--b-abj);
+  border-color: #7f7a62 #9a957b #cdc7a8 #9a957b;
+  border-radius: 14px;
+}
+
+.pantalla {
+  position: absolute;
+  top: calc(var(--m-arr) + var(--b-arr));
+  left: calc(var(--m-lado) + var(--b-lado));
+  right: calc(var(--m-lado) + var(--b-lado));
+  bottom: calc(var(--m-abj) + var(--b-abj));
+  overflow: hidden;
+  border-radius: 26px / 34px;
+  background: #111;
+  box-shadow: 0 0 0 3px #3d3a2e;
+}
+
+/* Viñeta y brillo del vidrio curvo */
+.pantalla::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 55;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%),
+    linear-gradient(160deg, rgba(255,255,255,.07), transparent 40%);
+  box-shadow: inset 0 0 40px rgba(0,0,0,.7);
+}
+
+.marca {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--m-abj) + 2px);
+  height: var(--b-abj);
+  margin: 0;
+  display: grid;
+  place-items: center;
+  font: italic 900 clamp(16px, 3.4vh, 30px) / 1 'Arial Black', Arial, sans-serif;
+  letter-spacing: 2px;
+  color: #8d886f;
+  text-shadow: 0 1px 0 #e3ddbf, 0 -1px 0 #6a6652;
+  pointer-events: none;
+}
+
+/* ---------- Fondo de la pantalla ---------- */
+#estatica {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  filter: contrast(1.1) brightness(0.9);
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+}
+
+.sin-fx #estatica { filter: brightness(0.45) blur(2px); }
+.sin-fx .scanlines { display: none; }
+
+.escritorio {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  display: flex;
+  padding: 24px 16px;
+}
+
+/* ---------- Arranque (máx. ~1.8 s) ---------- */
+.arranque {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  background: #000;
+  border-top: 3px solid #fff;
+  box-shadow: 0 -10px 18px rgba(255,255,255,.5);
+  animation: barrido 1.1s steps(20) .7s forwards;
+}
+.arranque pre {
+  margin: 0;
+  padding: 28px 32px;
+  font: 22px/1.3 var(--mono);
+  color: var(--lcd);
+  animation: tipeo .6s steps(4) both, apagar 0s .7s forwards;
+}
+
+@keyframes tipeo { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes apagar { to { visibility: hidden; } }
+/* La pantalla negra baja como el haz de un CRT dibujando la imagen línea a línea */
+@keyframes barrido { from { transform: translateY(0); } to { transform: translateY(102%); } }
+
+/* ---------- Ventanas ---------- */
+.win {
+  position: absolute;
+  width: min(560px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--ventana), var(--ventana-2));
+  border: 2px solid;
+  border-color: var(--luz) var(--sombra) var(--sombra) var(--luz);
+  box-shadow: 0 0 0 2px var(--negro), 8px 10px 0 rgba(0,0,0,.45);
+  z-index: 10;
+}
+
+.win[hidden] { display: none; }
+
+.win.abriendo { animation: abrir .22s steps(4) both; }
+
+@keyframes abrir {
+  from { transform: scale(.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* margin:auto centra sin recortar el contenido cuando la pantalla es baja */
+.win-main {
+  position: relative;
+  margin: auto;
+  width: min(620px, 100%);
+  max-height: none;
+  z-index: 5;
+}
+
+.win-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--barra);
+  border-bottom: 2px solid var(--sombra);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.win-main .win-bar { cursor: default; }
+.win-bar:active { cursor: grabbing; }
+
+.win-title {
+  margin: 0;
+  font-family: var(--pixel);
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--negro);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.win-x {
+  flex: none;
+  width: 26px;
+  height: 24px;
+  font: 16px/1 var(--pixel);
+  background: var(--ventana);
+  color: var(--negro);
+  border: 2px solid;
+  border-color: var(--luz) var(--sombra) var(--sombra) var(--luz);
+  cursor: pointer;
+}
+.win-x:active { border-color: var(--sombra) var(--luz) var(--luz) var(--sombra); }
+
+.win-body {
+  padding: 18px 20px 20px;
+  overflow-y: auto;
+}
+
+.win-body p { margin: 0 0 12px; }
+
+h3 {
+  font: 11px var(--pixel);
+  letter-spacing: 1px;
+  margin: 20px 0 10px;
+  color: var(--sombra);
+}
+
+/* ---------- Ventana principal ---------- */
+.intro { margin-bottom: 8px; }
+.rol { font-size: 28px; margin: 0 0 2px !important; color: var(--negro); }
+.ubic { color: #444; }
+
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  font: 10px var(--pixel);
+  color: var(--negro);
+  text-decoration: none;
+  background: var(--barra);
+  border: 2px solid;
+  border-color: var(--luz) var(--sombra) var(--sombra) var(--luz);
+  box-shadow: 0 0 0 1px var(--negro);
+  cursor: pointer;
+}
+.btn:hover { background: var(--luz); }
+.btn:active { border-color: var(--sombra) var(--luz) var(--luz) var(--sombra); }
+.btn-fuerte { background: var(--negro); color: var(--luz); border-color: #444 #000 #000 #444; }
+.btn-fuerte:hover { background: #333; }
+
+/* Filas centradas: con 7 íconos queda 4 + 3, como en AWGE */
+.iconos {
+  --cols: 4;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 18px;
+  margin: 26px 0 12px;
+}
+.iconos > .icono { flex: 0 0 calc(100% / var(--cols)); min-width: 0; }
+
+/* Todos los íconos usan el mismo tamaño de pixel (--px); la fila fija alinea las etiquetas */
+.icono {
+  --px: 4px;
+  display: grid;
+  grid-template-rows: calc(17 * var(--px)) auto;
+  justify-items: center;
+  align-items: end;
+  gap: 8px;
+  padding: 8px 4px;
+  background: none;
+  border: 2px solid transparent;
+  color: var(--c, var(--negro));
+  font: 10px var(--pixel);
+  text-shadow: 1px 1px 0 rgba(255,255,255,.55);
+  text-decoration: none;
+  cursor: pointer;
+}
+.icono canvas {
+  width: calc(var(--n, 12) * var(--px));
+  height: calc(var(--n, 12) * var(--px));
+  image-rendering: pixelated;
+  transition: transform .15s steps(3);
+}
+.icono:hover canvas, .icono:focus-visible canvas { transform: translateY(-4px); }
+.icono:hover span, .icono:focus-visible span { background: var(--c); color: var(--luz); text-shadow: none; }
+.icono span { padding: 2px 4px; }
+
+:focus-visible { outline: 2px dashed var(--negro); outline-offset: 2px; }
+
+.pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 2px solid var(--sombra);
+  font: 9px var(--pixel);
+  color: #3a3a3a;
+}
+.pie p { margin: 0; }
+.link { background: none; border: 0; font: inherit; color: inherit; cursor: pointer; text-decoration: underline; }
+
+/* ---------- Contenido de ventanas ---------- */
+.tag { font: 9px var(--pixel); color: var(--sombra); margin-bottom: 14px !important; }
+
+.lista { margin: 0; padding: 0; list-style: none; }
+.lista li { padding-left: 22px; position: relative; margin-bottom: 6px; }
+.lista li::before { content: '▸'; position: absolute; left: 4px; color: var(--rojo); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  background: var(--barra);
+  border: 2px solid var(--negro);
+  font-size: 20px;
+}
+.chip canvas { width: 24px; height: 24px; image-rendering: pixelated; }
+
+.logos { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 14px 8px; }
+.logo { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.logo canvas {
+  width: 54px;
+  height: 54px;
+  image-rendering: pixelated;
+  background: var(--barra);
+  border: 2px solid;
+  border-color: var(--sombra) var(--luz) var(--luz) var(--sombra);
+  padding: 4px;
+}
+.logo figcaption { font-size: 19px; line-height: 1; }
+
+.contacto { list-style: none; margin: 0; padding: 0; }
+.contacto li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 2px dotted var(--sombra);
+}
+.contacto span { font: 9px var(--pixel); width: 80px; }
+.contacto a { color: var(--azul); word-break: break-all; }
+
+/* ---------- Terminal ---------- */
+.win-term .win-body { background: #0d0d0d; color: #b6d98f; height: 340px; }
+.term pre { margin: 0 0 8px; font: inherit; white-space: pre-wrap; }
+.term .eco { color: #f4f4f4; }
+.term-linea { display: flex; gap: 8px; }
+.term-linea input {
+  flex: 1;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  caret-color: #b6d98f;
+  outline: none;
+}
+
+/* ---------- Móvil: ventanas a pantalla completa, como apps ---------- */
+@media (max-width: 719px) {
+  :root {
+    --m-arr: 8px; --m-lado: 8px; --m-abj: 10px;
+    --b-arr: 12px; --b-lado: 10px; --b-abj: 34px;
+  }
+  body { font-size: 20px; }
+  .pantalla { border-radius: 16px / 20px; }
+  .marca { font-size: 16px; }
+  .escritorio { padding: 20px 12px; }
+  .win:not(.win-main) {
+    inset: 8px !important;
+    width: auto;
+    max-height: none;
+  }
+  .win-title { font-size: 11px; }
+  .iconos { --cols: 3; row-gap: 14px; }
+  .icono { --px: 3.2px; font-size: 7px; }
+  .pie { flex-direction: column; align-items: flex-start; }
+  .arranque pre { padding: 20px; font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
