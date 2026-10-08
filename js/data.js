@@ -28,7 +28,7 @@ const LUMINA = {
     'Logo SVG de rayos animado.',
     'Backend propio en Node.js + Express consumido con Axios.',
   ],
-  stack: ['React', 'Vite', 'React Router', 'Axios', 'GSAP', 'Node.js', 'Express'],
+  stack: ['JavaScript', 'React', 'Vite', 'React Router', 'Axios', 'GSAP', 'Node.js', 'Express'],
 };
 
 const PORTAFOLIO = {
